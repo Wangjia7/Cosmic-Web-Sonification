@@ -11,7 +11,8 @@ This project maps the three structural types of the cosmic web — *halos*, *fil
 The scan line sweeps left to right. As it passes each structure, that region bursts into color and its assigned instrument sounds. Persistent homology topology features (H0 connected components, H1 dark-loop boundaries) are overlaid as gold blobs and cyan rings throughout.
 
 ---
-
+<video src="https://github.com/Wangjia7/Cosmic-Web-Sonification/main/video.mp4" controls>
+</video>
 ## Instrument Mapping
 
 | Structure | Detection method | Instrument | Character |
