@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paper Demo — Your Paper Title</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0e0f11;
+      --surface:   #16181c;
+      --border:    #2a2d34;
+      --accent:    #c8a96e;
+      --accent2:   #7eb8c9;
+      --text:      #e8e4dc;
+      --muted:     #7a7870;
+      --radius:    6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .5;
+    }
+
+    /* ── header bar ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(14,15,17,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: .75rem 2rem;
+      display: flex; align-items: center; gap: 1.5rem;
+    }
+    header a.home {
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    header a.home:hover { color: var(--accent); }
+    header .sep { color: var(--border); }
+    header .crumb {
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem;
+      color: var(--accent);
+      letter-spacing: .06em;
+    }
+
+    /* ── hero ── */
+    .hero {
+      position: relative; z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3rem;
+      animation: fadeUp .7s ease both;
+    }
+
+    .venue-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: .25rem .65rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -.01em;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    /* ── authors ── */
+    .authors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem 1.4rem;
+      margin-bottom: 2rem;
+    }
+    .author {
+      font-family: 'DM Mono', monospace;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    .author strong { color: var(--text); }
+    .author sup {
+      font-size: .6rem;
+      color: var(--accent);
+      vertical-align: super;
+    }
+    .affil {
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+    .affil span { margin-right: 1.2rem; }
+    .affil sup { color: var(--accent); font-size: .6rem; }
+
+    /* ── action links ── */
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-bottom: 3.5rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: .55rem 1.1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .2s, color .2s, transform .15s;
+    }
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0e0f11;
+    }
+    .btn.primary:hover {
+      background: #d9bb88;
+      border-color: #d9bb88;
+      color: #0e0f11;
+    }
+    .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 3rem;
+    }
+
+    /* ── video section ── */
+    .section {
+      position: relative; z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+      animation: fadeUp .7s .1s ease both;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+
+    .video-wrap {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      margin-bottom: .75rem;
+    }
+    .video-wrap iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    .video-caption {
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    /* ── abstract ── */
+    .abstract-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+    }
+    .abstract-box p {
+      color: #c5c1b8;
+      font-size: .97rem;
+      line-height: 1.85;
+    }
+
+    /* ── bibtex ── */
+    .bibtex-toggle {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .06em;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .4rem 0;
+      transition: color .2s;
+    }
+    .bibtex-toggle:hover { color: var(--accent); }
+    .bibtex-toggle svg { transition: transform .2s; }
+    .bibtex-toggle.open svg { transform: rotate(90deg); }
+
+    .bibtex-block {
+      display: none;
+      margin-top: .75rem;
+      background: #0a0b0d;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+    }
+    .bibtex-block.visible { display: block; }
+    .bibtex-block pre {
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      color: #9bb89e;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    /* ── footer ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* ── animation ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 600px) {
+      header { padding: .65rem 1rem; }
+      .hero, .section { padding-left: 1rem; padding-right: 1rem; }
+      h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── 导航面包屑 ── -->
+<header>
+  <a class="home" href="/">← Your Name</a>
+  <span class="sep">/</span>
+  <span class="crumb">Paper Demo</span>
+</header>
+
+<!-- ── 标题区 ── -->
+<div class="hero">
+  <!-- 修改：会议/期刊名称 -->
+  <div class="venue-tag">CVPR 2025</div>
+
+  <!-- 修改：论文标题 -->
+  <h1>Your Paper Title Goes Here: A Subtitle That Explains the Core Idea</h1>
+
+  <!-- 修改：作者列表 -->
+  <div class="authors">
+    <div class="author"><strong>Your Name</strong><sup>1</sup></div>
+    <div class="author">Co-author One<sup>1</sup></div>
+    <div class="author">Co-author Two<sup>2</sup></div>
+    <div class="author">Corresponding Author<sup>1†</sup></div>
+  </div>
+
+  <!-- 修改：机构 -->
+  <div class="affil">
+    <span><sup>1</sup> Your University</span>
+    <span><sup>2</sup> Collaborating Institution</span>
+  </div>
+
+  <!-- 修改：链接，不需要的删掉即可 -->
+  <div class="links">
+    <a class="btn primary" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Paper PDF
+    </a>
+    <a class="btn" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      Code
+    </a>
+    <a class="btn" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Dataset
+    </a>
+    <a class="btn" href="https://arxiv.org" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+      arXiv
+    </a>
+  </div>
+
+  <hr class="divider">
+</div>
+
+<!-- ── 视频 ── -->
+<div class="section">
+  <div class="section-label">▸ Demo Video</div>
+
+  <div class="video-wrap">
+    <!--
+      修改方法：把下面 src 里的 VIDEO_ID 替换成你的 YouTube 视频 ID
+      YouTube 视频 ID 是链接 https://youtu.be/VIDEO_ID 中的最后一段
+    -->
+    <iframe
+      src="https://www.youtube.com/embed/VIDEO_ID"
+      title="Paper Demo Video"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+    </iframe>
+  </div>
+  <div class="video-caption">↑ 换视频只需替换上方 src 中的 VIDEO_ID</div>
+</div>
+
+<!-- ── 摘要 ── -->
+<div class="section">
+  <div class="section-label">▸ Abstract</div>
+  <div class="abstract-box">
+    <!-- 修改：粘贴你的论文摘要 -->
+    <p>
+      Paste your paper abstract here. This section should give readers a concise overview
+      of the problem you are addressing, the proposed method, and the key experimental
+      results. Keep it faithful to the submitted version of your paper so that readers
+      arriving from the citation can quickly judge relevance before watching the video.
+    </p>
+  </div>
+</div>
+
+<!-- ── BibTeX ── -->
+<div class="section">
+  <div class="section-label">▸ Citation</div>
+
+  <button class="bibtex-toggle" id="bibtexBtn" onclick="toggleBibtex()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    Show BibTeX
+  </button>
+
+  <div class="bibtex-block" id="bibtexBlock">
+    <!-- 修改：替换为你的 BibTeX -->
+    <pre>@inproceedings{yourname2025paper,
+  title     = {Your Paper Title Goes Here},
+  author    = {Your Name and Co-author One and Co-author Two},
+  booktitle = {Proceedings of the IEEE/CVF Conference on
+               Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2025},
+}</pre>
+  </div>
+</div>
+
+<!-- ── footer ── -->
+<footer>
+  <a href="/">← Back to homepage</a>
+  &nbsp;·&nbsp;
+  <!-- 修改：替换为你的邮箱 -->
+  Questions? <a href="mailto:you@university.edu">you@university.edu</a>
+</footer>
+
+<script>
+  function toggleBibtex() {
+    const btn   = document.getElementById('bibtexBtn');
+    const block = document.getElementById('bibtexBlock');
+    const open  = block.classList.toggle('visible');
+    btn.classList.toggle('open', open);
+    btn.querySelector('svg + *') // no-op guard
+    btn.childNodes[1].textContent = open ? ' Hide BibTeX' : ' Show BibTeX';
+  }
+</script>
+
+</body>
+</html>
